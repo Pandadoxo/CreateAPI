@@ -5,6 +5,7 @@
 ///////////////////////////////
 package de.pandadoxo.createapi.creatorpermission;
 
+import de.pandadoxo.create.creatorpermission.PermissionEntry;
 import org.bukkit.plugin.Plugin;
 
 public abstract class APermissionEntry {
@@ -19,6 +20,10 @@ public abstract class APermissionEntry {
         this.database = database;
         this.table = table;
         this.priority = priority;
+    }
+
+    public static APermissionEntry from(Plugin plugin, String database, String table, int priority) {
+        return new PermissionEntry(plugin, database, table, priority);
     }
 
     public abstract void create();
