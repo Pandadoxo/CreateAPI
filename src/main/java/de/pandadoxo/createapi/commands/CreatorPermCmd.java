@@ -4,22 +4,18 @@
 // Don't remove this section //
 ///////////////////////////////
 package de.pandadoxo.createapi.commands;
-
-import de.pandadoxo.create.Create;
-import de.pandadoxo.create.creatorpermission.PermissionEntry;
+import de.pandadoxo.createapi.CreateAPI;
 import de.pandadoxo.createapi.creatorpermission.APermissionEntry;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 
 public class CreatorPermCmd implements CommandExecutor, TabCompleter {
 
@@ -52,9 +48,9 @@ public class CreatorPermCmd implements CommandExecutor, TabCompleter {
                     HashMap<String, Boolean> permissions = new HashMap<>();
 
                     // get permissionEntry
-                    PermissionEntry permissionEntry = Create.getPermissionCore().getPermissionEntry(plugin);
+                    APermissionEntry permissionEntry = CreateAPI.getPermissionCore().getPermissionEntry(plugin);
                     if (permissionEntry != null) {
-                        permissions.putAll(Create.getMySqlBridge().loadCreatorPermissions(permissionEntry));
+                        permissions.putAll(permissionEntry.load());
                     }
 
                     //Permissions empty
@@ -84,13 +80,13 @@ public class CreatorPermCmd implements CommandExecutor, TabCompleter {
         //Unset
         if (args.length == 2 && args[0].equalsIgnoreCase("unset")) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                PermissionEntry permissionEntry = Create.getPermissionCore().getPermissionEntry(plugin);
+                APermissionEntry permissionEntry = CreateAPI.getPermissionCore().getPermissionEntry(plugin);
                 if (permissionEntry == null) {
                     sender.sendMessage(PREFIX + "§7Es ist §ckein PermissionEntry §7registriert!");
                     return;
                 }
 
-                if (Create.getMySqlBridge().unsetCreatorPermission(permissionEntry, args[1].toLowerCase())) {
+                if (permissionEntry.unset(args[1].toLowerCase())) {
                     sender.sendMessage(PREFIX + "§7Dem §bCreator §7wurde das Recht §e§o" + args[1].toLowerCase() +
                             " §centfernt");
                 } else {
@@ -105,7 +101,7 @@ public class CreatorPermCmd implements CommandExecutor, TabCompleter {
         //Set
         if (args.length == 3 && args[0].equalsIgnoreCase("set")) {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                PermissionEntry permissionEntry = Create.getPermissionCore().getPermissionEntry(plugin);
+                APermissionEntry permissionEntry = CreateAPI.getPermissionCore().getPermissionEntry(plugin);
                 if (permissionEntry == null) {
                     sender.sendMessage(PREFIX + "§7Es ist §ckein PermissionEntry §7registriert!");
                     return;
@@ -114,7 +110,7 @@ public class CreatorPermCmd implements CommandExecutor, TabCompleter {
                 String permission = args[1].toLowerCase();
                 boolean value = args[2].equalsIgnoreCase("true");
 
-                Create.getMySqlBridge().saveCreatorPermission(permissionEntry, permission, value);
+                permissionEntry.set(permission, value);
 
                 //Send Message
                 sender.sendMessage(PREFIX + "§7Dem §bCreator §7wurde das Recht §e§o" + permission +
