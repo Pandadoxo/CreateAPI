@@ -5,6 +5,7 @@
 ///////////////////////////////
 package de.pandadoxo.createapi.creatorpermission;
 
+import de.pandadoxo.createapi.CreateAPI;
 import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
@@ -21,6 +22,10 @@ public abstract class APermissionEntry {
         this.database = database;
         this.table = table;
         this.priority = priority;
+    }
+
+    public static APermissionEntry from(Plugin plugin, String database, String table, int priority) {
+        return CreateAPI.getPermissionEntryBuilder().build(plugin, database, table, priority);
     }
     public abstract void create();
 
